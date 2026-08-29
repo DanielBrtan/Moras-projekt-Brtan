@@ -1,0 +1,136 @@
+class Game {
+    field Basket basket;
+    field Falling fallingObj;
+    field int score;
+    field int lives;
+    field int frameCounter; 
+    field boolean exit;
+    field int moveDelay;
+    field int wait;
+
+    constructor Game new() {
+        do Screen.clearScreen();
+        let score = 0;
+        let lives = 3;
+        let frameCounter = 0;
+        let exit = false;
+        let moveDelay = 0;
+        let wait = 500;
+
+        let basket = Basket.new(230, 240);
+
+        let fallingObj = Falling.new(100);
+
+        do printScore();
+        do printLives();
+        return this;
+    }
+
+    method void run() {
+        var char key;
+        var boolean hitBottom;
+
+        while (~exit) {
+            let frameCounter = frameCounter + 1;
+        
+            let key = Keyboard.keyPressed();
+
+            let moveDelay = moveDelay + 1;
+            if(moveDelay > 3){
+            if (key = 130) { do basket.moveLeft(); }   
+            if (key = 132) { do basket.moveRight(); }  
+            if (key = 140) { let exit = true; }        
+            let moveDelay = 0;
+            }
+
+            let hitBottom = fallingObj.moveDown(wait);
+
+            if (hitBottom) {
+                do checkCatch();
+            }
+
+            do Sys.wait(30);
+
+        }
+
+        do showGameOver();
+        return;
+    }
+
+    method void checkCatch() {
+        var int objLeft, objRight, basketLeft, basketRight;
+        let objLeft = fallingObj.getLeft();
+        let objRight = fallingObj.getRight();
+        let basketLeft = basket.getLeft();
+        let basketRight = basket.getRight();
+
+        if (~(objRight < basketLeft) & ~(objLeft > basketRight)) {
+            let score = score + 1;
+            do printScore();
+            if(score > 4){
+                if ((score - ((score / 5) * 5)) = 0) {
+                    if (wait > 100) {
+                        let wait = wait - 200;
+                    }
+                }
+            }
+        } else {
+            
+            let lives = lives - 1;
+            do printLives();
+            if (lives = 0) {
+                let exit = true;
+                return;
+            }
+        }
+
+       
+        do spawnNew();
+        do printLives();
+        do printScore();
+        return;
+    }
+
+    method void spawnNew() {
+        var int newX;
+        let newX = frameCounter - ((frameCounter / 45) * 45);  
+        let newX = newX * 10;  
+        if (newX < 10)  { let newX = 10; }
+        if (newX > 450) { let newX = 450; }
+        do fallingObj.reset(newX);
+        return;
+    }
+
+    method void printScore() {
+        do Output.moveCursor(0, 0);
+        do Output.printString("Score: ");
+        do Output.printInt(score);
+        do Output.printString("  ");  
+        return;
+    }
+
+    method void printLives() {
+        do Output.moveCursor(0, 45);
+        do Output.printString("Lives: ");
+        do Output.printInt(lives);
+        return;
+    }
+
+    method void showGameOver() {
+        do Screen.clearScreen();
+        do Output.moveCursor(10, 25);
+        do Output.printString("GAME OVER");
+        do Output.moveCursor(12, 23);
+        do Output.printString("Final score: ");
+        do Output.printInt(score);
+        do Output.moveCursor(14, 20);
+        return;
+    }
+
+    method void dispose() {
+        do basket.dispose();
+        do fallingObj.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+}

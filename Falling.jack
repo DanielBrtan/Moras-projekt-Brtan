@@ -1,0 +1,56 @@
+class Falling {
+    field int x, y;       
+    field int size;       
+
+    constructor Falling new(int startX) {
+        let x = startX;
+        let y = 0;
+        let size = 10;
+        do draw();
+        return this;
+    }
+
+    method void draw() {
+        do Screen.setColor(true);
+        do Screen.drawRectangle(x, y, x + size, y + size);
+        return;
+    }
+
+    method void erase() {
+        do Screen.setColor(false);
+        do Screen.drawRectangle(x, y, x + size, y + size);
+        return;
+    }
+
+    method boolean moveDown(int wait) {
+        do erase();
+        let y = y + 1;
+        if (y > 245) {      
+            return true;     
+        }
+        do draw();
+        do Sys.wait(wait);
+        return false;
+    }
+
+    method int getLeft() {
+        return x;
+    }
+
+    method int getRight() {
+        return x + size;
+    }
+
+    method void reset(int newX) {
+
+        let x = newX;
+        let y = 0;
+        do draw();
+        return;
+    }
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+}

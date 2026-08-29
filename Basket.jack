@@ -1,0 +1,55 @@
+class Basket {
+    field int x, y;       
+    field int width;      
+
+    constructor Basket new(int startX, int startY) {
+        let x = startX;
+        let y = startY;
+        let width = 40;
+        do draw();
+        return this;
+    }
+
+    method void draw() {
+        do Screen.setColor(true);
+        do Screen.drawRectangle(x, y, x + width, y + 8);
+        return;
+    }
+
+    method void erase() {
+        do Screen.setColor(false);
+        do Screen.drawRectangle(x, y, x + width, y + 8);
+        return;
+    }
+
+    method void moveLeft() {
+        if (x > 10) {
+            do erase();
+            let x = x - 10;
+            do draw();
+        }
+        return;
+    }
+    
+    method void moveRight() {
+        if ((x + width) < 500) {
+            do erase();
+            let x = x + 10;
+            do draw();
+        }
+        return;
+    }
+
+    method int getLeft() {
+        return x;
+    }
+
+    method int getRight() {
+        return x + width;
+    }
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+}
